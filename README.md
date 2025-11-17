@@ -21,27 +21,46 @@ dart pub get
 
 ### 基本用法
 
-```bash
 # 显示帮助
+
+```bash
 dart run bin/ltbase_client.dart --help
+```
 
 # 健康检查
+
+```bash
 dart run bin/ltbase_client.dart \
   --access-key-id "AK_PSnulf1ATHSlQ5VgzV9CIg" \
   --access-secret "SK_MC4CAQAwBQYDK2VwBCIEIPro6WPVBiMoFCjDT5U8NjqJeIsPcA4PNLOta8DLnjfE" \
   deepping --echo "hello"
+```
 
 # 创建文本笔记
+
+```bash
 dart run bin/ltbase_client.dart \
   --access-key-id "AK_xxx" \
   --access-secret "SK_xxx" \
-  create-note --user-id "user123" --type text --data "测试笔记"
+  create-note --owner-id "user123" --type text --data "测试笔记"
+```
 
 # 列出笔记
+```bash
 dart run bin/ltbase_client.dart \
   --access-key-id "AK_xxx" \
   --access-secret "SK_xxx" \
-  list-notes --page 1 --items-per-page 10
+  list-notes --owner-id user123  --page 1 --items-per-page 10
+```
+
+# 更新笔记摘要
+```bash
+dart run bin/ltbase_client.dart \
+  --base-url "https://api.suremate.local:5000" \
+  --access-key-id "AK_dUJryUphQUOTrBl2FSN7zQ" \
+  --access-secret "SK_MC4CAQAwBQYDK2VwBCIEIH9N4RFAVeX6kdU9Puf3LQGpNd-j8OozGaB8R1a7ob7D" \
+   update-note --owner-id user123 --note-id "cef124cc-fab2-4bad-b7b2-2c8a2e546298" \
+   --summary 'updated summary'
 ```
 
 ### 编译为可执行文件
@@ -132,58 +151,80 @@ dart compile exe bin/ltbase_client.dart -o ltbase
 
 ```bash
 dart run bin/ltbase_client.dart \
-  --base-url "https://api.suremate.local:5000" \
-  --access-key-id "AK_3ShK-hMMedDqjigeVv8OEjxJ4GxlkFu5l8pWrlYjeW8" \
-  --access-secret "SK_MC4CAQAwBQYDK2VwBCIEIITEXquKFhk-DvZOb_BdU9Lc6DGaItQk4lZmYFQho8C_" \
+  --base-url "https://ltbase-jp-beta.suremate.cc" \
+  --access-key-id "AK_xxx" \
+  --access-secret "SK_xxx" \
   deepping --echo "test"
 ```
 
 ### 2. 创建笔记
 
-```bash
-# 文本笔记
-dart run bin/ltbase_client.dart \
-  --access-key-id "AK_xxx" \
-  --access-secret "SK_xxx" \
-  create-note --user-id "user123" --type text --data "Hello World"
+#### 文本笔记
 
-# 从文件创建图片笔记
+```bash
 dart run bin/ltbase_client.dart \
+  --base-url "https://ltbase-jp-beta.suremate.cc" \
   --access-key-id "AK_xxx" \
   --access-secret "SK_xxx" \
-  create-note --user-id "user123" --type image --file "./photo.jpg"
+  create-note --owner-id "user123" --type "text/plain" --data "Hello World"
+```
+
+##### 从文件创建图片笔记
+```bash
+dart run bin/ltbase_client.dart \
+  --base-url "https://ltbase-jp-beta.suremate.cc" \
+  --access-key-id "AK_xxx" \
+  --access-secret "SK_xxx" \
+  create-note --owner-id "user123" \
+  --type "image/jpeg" --file "./photo.jpg"
 ```
 
 ### 3. 查询笔记
 
-```bash
-# 获取单个笔记
-dart run bin/ltbase_client.dart \
-  --access-key-id "AK_xxx" \
-  --access-secret "SK_xxx" \
-  get-note "550e8400-e29b-41d4-a716-446655440000"
+#### 获取单个笔记
 
-# 列出笔记（带过滤）
+```bash
 dart run bin/ltbase_client.dart \
+  --base-url "https://ltbase-jp-beta.suremate.cc" \
   --access-key-id "AK_xxx" \
   --access-secret "SK_xxx" \
-  list-notes --page 1 --items-per-page 10 --summary "测试"
+  get-note --note-id "550e8400-e29b-41d4-a716-446655440000" \
+  --owner-id "user123"
+```
+
+#### 列出笔记（带过滤）
+```bash
+dart run bin/ltbase_client.dart \
+  --base-url "https://ltbase-jp-beta.suremate.cc" \
+  --access-key-id "AK_xxx" \
+  --access-secret "SK_xxx" \
+  list-notes --owner-id user123 \
+  --page 1 --items-per-page 10 \
+  --summary "测试"
 ```
 
 ### 4. 更新和删除
 
-```bash
-# 更新笔记摘要
-dart run bin/ltbase_client.dart \
-  --access-key-id "AK_xxx" \
-  --access-secret "SK_xxx" \
-  update-note "550e8400-e29b-41d4-a716-446655440000" --summary "新摘要"
+#### 更新笔记摘要
 
-# 删除笔记
+```bash
 dart run bin/ltbase_client.dart \
+  --base-url "https://ltbase-jp-beta.suremate.cc" \
   --access-key-id "AK_xxx" \
   --access-secret "SK_xxx" \
-  delete-note "550e8400-e29b-41d4-a716-446655440000"
+  update-note --owner-id user123 \
+  --note-id "550e8400-e29b-41d4-a716-446655440000" --summary "新摘要"
+```
+
+#### 删除笔记
+
+```bash
+dart run bin/ltbase_client.dart \
+  --base-url "https://ltbase-jp-beta.suremate.cc" \
+  --access-key-id "AK_xxx" \
+  --access-secret "SK_xxx" \
+  delete-note  --owner-id user123 \
+  --note-id "550e8400-e29b-41d4-a716-446655440000"
 ```
 
 ### 5. 详细输出模式

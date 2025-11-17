@@ -75,7 +75,7 @@ ltbase --access-key-id <AK> --access-secret <SK> create-note [OPTIONS]
 ```
 
 **选项:**
-- `--user-id <ID>` - 创建者用户ID（必需）
+- `--owner-id <ID>` - 创建者用户ID（必需）
 - `--type <TYPE>` - 笔记类型：`text`|`audio`|`image`（必需）
 - `--data <DATA>` - 笔记内容数据
 - `--file <PATH>` - 从文件读取数据（与 `--data` 二选一）
@@ -86,13 +86,13 @@ ltbase --access-key-id <AK> --access-secret <SK> create-note [OPTIONS]
 dart run bin/ltbase_client.dart \
   --access-key-id "AK_xxx" \
   --access-secret "SK_xxx" \
-  create-note --user-id "user123" --type text --data "这是一条测试笔记"
+  create-note --owner-id "user123" --type text --data "这是一条测试笔记"
 
 # 从文件创建图片笔记
 dart run bin/ltbase_client.dart \
   --access-key-id "AK_xxx" \
   --access-secret "SK_xxx" \
-  create-note --user-id "user123" --type image --file "./photo.jpg"
+  create-note --owner-id "user123" --type image --file "./photo.jpg"
 ```
 
 **输出示例:**
@@ -167,7 +167,7 @@ dart run bin/ltbase_client.dart \
 dart run bin/ltbase_client.dart \
   --access-key-id "AK_xxx" \
   --access-secret "SK_xxx" \
-  list-notes --page 2 --items-per-page 10 --summary "测试"
+  list-notes --owner-id abc123 --page 2 --items-per-page 10 --summary "测试"
 ```
 
 **输出示例:**

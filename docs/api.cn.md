@@ -11,7 +11,7 @@
 ```json
 {
     "note_id": "<uuid>",
-    "created_by": "<user_id>",
+    "created_by": "<owner_id>",
     "created_at": <epoch millisecond>,
     "updated_at": <epoch millisecond>,
     "raw": {
@@ -44,7 +44,7 @@ Length of body must be less than 6MB.
 
 ```json
 {
-    "created_by": "<user_id>",
+    "created_by": "<owner_id>",
     "type": "text|audio|image",
     "data": "text | data url | raw base64 string"
 }

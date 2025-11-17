@@ -26,11 +26,13 @@ class ApiClient {
     // Build query string (sorted by key)
     final sortedQueryString = _buildQueryString(queryParams);
     final fullUri = queryParams != null && queryParams.isNotEmpty
-        ? uri.replace(queryParameters: queryParams) 
+        ? uri.replace(queryParameters: queryParams)
         : uri;
 
     // Encode body
     final bodyString = body != null ? jsonEncode(body) : '';
+
+    print('bodyString: $bodyString\n');
 
     // Generate authorization header
     final authHeader = await signer.generateAuthorizationHeader(
@@ -60,7 +62,7 @@ class ApiClient {
     final client = HttpClient();
     try {
       HttpClientRequest request;
-      
+
       switch (method.toUpperCase()) {
         case 'GET':
           request = await client.getUrl(fullUri);
@@ -77,14 +79,12 @@ class ApiClient {
         default:
           throw ArgumentError('Unsupported HTTP method: $method');
       }
-
       // Set headers
       request.headers.set('Authorization', authHeader);
-      request.headers.set('Content-Type', 'application/json');
-
+      request.headers.set('Content-Type', 'application/json; charset=UTF-8');
       // Write body if present
       if (bodyString.isNotEmpty) {
-        request.write(bodyString);
+        request.add(utf8.encode(bodyString));
       }
 
       // Send request and get response
@@ -102,6 +102,13 @@ class ApiClient {
         body: responseBody,
         headers: response.headers,
       );
+    } catch (e, stackTrace) {
+      // 打印异常信息
+      print('Exception: $e');
+      print('Stack trace:\n$stackTrace');
+
+      // 重新抛出原始异常（保留原始堆栈）
+      rethrow;
     } finally {
       client.close();
     }
@@ -120,7 +127,8 @@ class ApiClient {
     for (final key in sortedKeys) {
       final value = params[key];
       if (value != null) {
-        parts.add('${Uri.encodeQueryComponent(key)}=${Uri.encodeQueryComponent(value)}');
+        parts.add(
+            '${Uri.encodeQueryComponent(key)}=${Uri.encodeQueryComponent(value)}');
       }
     }
 
