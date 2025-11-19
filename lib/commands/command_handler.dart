@@ -32,6 +32,7 @@ class CommandHandler {
     required String type,
     String? data,
     String? filePath,
+    String? role,
   }) async {
     String noteData;
 
@@ -61,6 +62,7 @@ class CommandHandler {
       'owner_id': ownerId,
       'type': type,
       'data': noteData,
+      'role': role ?? 'real_estate',
     };
 
     final response = await client.post('/api/ai/v1/notes', body: body);
@@ -69,7 +71,7 @@ class CommandHandler {
       final note = response.json;
       print('✓ Note created successfully');
       print('  Note ID: ${note?['note_id']}');
-      print('  Type: ${note?['raw']?['type']}');
+      print('  Type: ${note?['type']}');
       print('  Created at: ${note?['created_at']}');
     } else {
       print('✗ Failed to create note: ${response.statusCode}');

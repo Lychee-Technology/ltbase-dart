@@ -82,6 +82,7 @@ class ApiClient {
       // Set headers
       request.headers.set('Authorization', authHeader);
       request.headers.set('Content-Type', 'application/json; charset=UTF-8');
+      request.headers.set(HttpHeaders.acceptEncodingHeader, 'gzip');
       // Write body if present
       if (bodyString.isNotEmpty) {
         request.add(utf8.encode(bodyString));
@@ -89,7 +90,7 @@ class ApiClient {
 
       // Send request and get response
       final response = await request.close();
-      final responseBody = await response.transform(utf8.decoder).join();
+      final responseBody = await _decodeResponse(response);
 
       if (verbose) {
         print('Response Status: ${response.statusCode}');
@@ -112,6 +113,41 @@ class ApiClient {
     } finally {
       client.close();
     }
+  }
+
+  Future<String> _decodeResponse(HttpClientResponse response) async {
+    Stream<List<int>> responseStream = response;
+
+    if (_isGzipEncoded(response)) {
+      responseStream = responseStream.transform(gzip.decoder);
+    }
+
+    final encoding = _encodingFromHeaders(response.headers);
+    return responseStream.transform(encoding.decoder).join();
+  }
+
+  Encoding _encodingFromHeaders(HttpHeaders headers) {
+    final charset = headers.contentType?.charset;
+    if (charset != null) {
+      final encoding = Encoding.getByName(charset);
+      if (encoding != null) {
+        return encoding;
+      }
+    }
+
+    return utf8;
+  }
+
+  bool _isGzipEncoded(HttpClientResponse response) {
+    if (response.compressionState ==
+        HttpClientResponseCompressionState.decompressed) {
+      return false;
+    }
+
+    final encoding =
+        response.headers.value(HttpHeaders.contentEncodingHeader) ?? '';
+
+    return encoding.toLowerCase().contains('gzip');
   }
 
   /// Build query string sorted by key

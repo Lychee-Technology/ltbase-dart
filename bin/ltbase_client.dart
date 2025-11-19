@@ -68,6 +68,9 @@ ArgParser _createCreateNoteParser() {
     ..addOption('owner-id', help: 'User ID of the creator', mandatory: true)
     ..addOption('type', help: 'Note type: text|audio|image', mandatory: true)
     ..addOption('data', help: 'Note data (text or URL)')
+    ..addOption('role',
+        help: 'Role of the note, e.g., real_estate, insurance, etc.',
+        defaultsTo: 'real_estate')
     ..addOption('file', help: 'Read data from file (alternative to --data)');
 }
 
@@ -121,6 +124,7 @@ Future<void> _executeCommand(CommandHandler handler, ArgResults command) async {
         type: type,
         data: command['data'] as String?,
         filePath: command['file'] as String?,
+        role: command['role'] as String?,
       );
       break;
 
