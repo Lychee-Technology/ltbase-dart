@@ -63,6 +63,20 @@ class CommandHandler {
       'type': type,
       'data': noteData,
       'role': role ?? 'real_estate',
+      'models': [
+        {
+          'type': "log",
+          'data': {
+            'visitId': 'fe9f53a6-08d1-47e7-bad7-433020084723',
+            'noteId': r'${note.note_id}',
+            'ownerId': r"${note.owner_id}",
+            'summary': r"${note.summary}",
+            'type': r"${note.type}",
+            'createdAt': r"${note.created_at}",
+            'updatedAt': r"${note.updated_at}"
+          }
+        }
+      ]
     };
 
     final response = await client.post('/api/ai/v1/notes', body: body);
@@ -136,8 +150,7 @@ class CommandHandler {
   /// Update Note command
   Future<void> updateNote(String ownerId, String noteId, String summary) async {
     final body = {'owner_id': ownerId, 'summary': summary};
-    final response = await client
-        .put('/api/ai/v1/notes/$noteId', body: body);
+    final response = await client.put('/api/ai/v1/notes/$noteId', body: body);
 
     if (response.isSuccess) {
       print('✓ Note summary updated successfully');
@@ -160,6 +173,44 @@ class CommandHandler {
       print('  Note ID: $noteId');
     } else {
       print('✗ Failed to delete note: ${response.statusCode}');
+      print('  ${response.body}');
+      exit(1);
+    }
+  }
+
+  /// List Logs command
+  Future<void> listLogs({
+    String? logId,
+    String? leadId,
+    String? visitId,
+    String? ownerId,
+    int? page,
+    int? itemsPerPage,
+  }) async {
+    final params = <String, String>{};
+    if (page != null) params['page'] = page.toString();
+    if (itemsPerPage != null) {
+      params['items_per_page'] = itemsPerPage.toString();
+    }
+    if (logId != null) params['id'] = logId;
+    if (leadId != null) params['leadId'] = leadId;
+    if (visitId != null) params['visitId'] = visitId;
+    if (ownerId != null) params['ownerId'] = ownerId;
+
+    final response = await client.get('/api/v1/log', queryParams: params);
+
+    if (response.isSuccess) {
+      final data = response.json;
+      final logs = data?['data'] as List?;
+
+      if (logs != null && logs.isNotEmpty) {
+        print('✓ Found ${logs.length} log(s)');
+        print(JsonEncoder.withIndent('  ').convert(data));
+      } else {
+        print('✓ No logs found');
+      }
+    } else {
+      print('✗ Failed to list logs: ${response.statusCode}');
       print('  ${response.body}');
       exit(1);
     }

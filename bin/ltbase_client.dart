@@ -23,6 +23,7 @@ void main(List<String> arguments) async {
   parser.addCommand('list-notes', _createListNotesParser());
   parser.addCommand('update-note', _createUpdateNoteParser());
   parser.addCommand('delete-note', _createDeleteNoteParser());
+  parser.addCommand('list-logs', _createListLogsParser());
 
   try {
     final results = parser.parse(arguments);
@@ -100,6 +101,16 @@ ArgParser _createDeleteNoteParser() {
   return ArgParser();
 }
 
+ArgParser _createListLogsParser() {
+  return ArgParser()
+    ..addOption('log-id', help: 'Filter by log ID')
+    ..addOption('lead-id', help: 'Filter by lead ID')
+    ..addOption('visit-id', help: 'Filter by visit ID')
+    ..addOption('owner-id', help: 'Filter by owner ID')
+    ..addOption('page', help: 'Page number', defaultsTo: '1')
+    ..addOption('items-per-page', help: 'Items per page', defaultsTo: '20');
+}
+
 Future<void> _executeCommand(CommandHandler handler, ArgResults command) async {
   switch (command.name) {
     case 'deepping':
@@ -164,6 +175,17 @@ Future<void> _executeCommand(CommandHandler handler, ArgResults command) async {
       await handler.deleteNote(command.rest.first);
       break;
 
+    case 'list-logs':
+      await handler.listLogs(
+        logId: command['log-id'] as String?,
+        leadId: command['lead-id'] as String?,
+        visitId: command['visit-id'] as String?,
+        ownerId: command['owner-id'] as String?,
+        page: int.tryParse(command['page'] as String),
+        itemsPerPage: int.tryParse(command['items-per-page'] as String),
+      );
+      break;
+
     default:
       print('Unknown command: ${command.name}');
       exit(1);
@@ -182,6 +204,7 @@ void _printUsage(ArgParser parser) {
   print('  list-notes            List notes with optional filters');
   print('  update-note <NOTE_ID> Update note summary');
   print('  delete-note <NOTE_ID> Delete a note');
+  print('  list-logs             List logs with optional filters');
   print('\nExamples:');
   print('  # Health check');
   print(
